@@ -1,3 +1,6 @@
+const https = require('https');
+const fs = require('fs');
+
 require('dotenv').config();
 
 const express = require('express');
@@ -12,6 +15,7 @@ if (!SECRET_KEY) {
     console.error('Error: falta definir JWT_SECRET en las variables de entorno.');
     process.exit(1);
 }
+
 
 // Configuración de seguridad utilizada por el servidor
 const TOKEN_EXPIRATION = '1h';
@@ -107,7 +111,18 @@ app.post('/logout', (req, res) => {
     });
     res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
 });
+const httpsOptions = {
+  key: fs.readFileSync('./cert/privatekey.pem'),
+  cert: fs.readFileSync('./cert/certificate.pem'),
+
+};
+const PORT = 3010;
+const HTTPS_PORT = 443;
 
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor HTTP escuchando en puerto ${PORT}`);
+});
+
+https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+  console.log(`Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
 });
