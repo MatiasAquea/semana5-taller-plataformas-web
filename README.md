@@ -14,9 +14,25 @@
 
 Este repositorio corresponde a la actividad formativa de la **Semana 5** de la asignatura **Taller de Plataformas Web**.
 
-El proyecto extiende el backend desarrollado para la agencia digital ficticia **Vigilo.cl**, incorporando la configuración de un servidor **HTTPS** en Node.js con Express. La comunicación segura se implementa mediante un certificado **SSL/TLS autofirmado**, generado localmente con OpenSSL.
+El proyecto continúa el backend desarrollado durante la **Semana 4** para la agencia digital ficticia **Vigilo.cl**. Para esta nueva actividad, se trabajó sobre una copia del proyecto anterior y se incorporó la configuración de un servidor **HTTPS** en Node.js con Express.
 
-El objetivo de esta actividad es comprender cómo funcionan los certificados digitales, el cifrado de las comunicaciones y la configuración de HTTPS en un entorno backend.
+La comunicación segura se implementa mediante un certificado **SSL/TLS autofirmado**, generado localmente con OpenSSL. El objetivo es comprender cómo funcionan los certificados digitales, el cifrado de las comunicaciones y la configuración de HTTPS en un entorno backend.
+
+---
+
+## 🗂️ Antecedentes del proyecto
+
+El proyecto base fue desarrollado durante la **Semana 4** y corresponde al backend inicial de Vigilo.cl:
+
+[Repositorio base de Semana 4 — Vigilo.cl](https://github.com/Vigilalo/semana-4-taller-de-plataformas-web)
+
+Para la actividad de Semana 5, se creó una copia del proyecto base y se añadieron las siguientes mejoras:
+
+- Configuración de un servidor HTTPS con Node.js y Express.
+- Generación de un certificado SSL/TLS autofirmado mediante OpenSSL.
+- Uso de `fs` para leer la clave privada y el certificado.
+- Uso del módulo nativo `https` para iniciar el servidor seguro.
+- Actualización de la documentación y pruebas de acceso local mediante HTTPS.
 
 ---
 
@@ -48,7 +64,7 @@ Implementar un servidor HTTPS en Node.js y Express utilizando un certificado SSL
 - Generar una clave privada y un certificado SSL/TLS autofirmado mediante **OpenSSL**.
 - Configurar Express para atender solicitudes bajo el protocolo **HTTPS**.
 - Utilizar los módulos nativos `https` y `fs` de Node.js para crear el servidor y leer los certificados.
-- Probar la ejecución local del servidor desde `https://localhost`.
+- Probar la ejecución local del servidor mediante `https://localhost`.
 - Documentar el comportamiento del navegador ante un certificado autofirmado.
 - Mantener el código y la documentación organizados para facilitar su comprensión.
 - Registrar el trabajo del equipo mediante Git, GitHub y mensajes de commit descriptivos.
@@ -83,7 +99,7 @@ Antes de ejecutar el proyecto, verifica que tengas instalado:
 - Un editor de código, como Visual Studio Code.
 - Un navegador web actualizado.
 
-Puedes comprobar algunas instalaciones con los siguientes comandos:
+Puedes comprobar las instalaciones con los siguientes comandos:
 
 ```bash
 node -v
@@ -96,10 +112,10 @@ openssl version
 
 ## 📥 Instalación del proyecto
 
-### 1. Clonar el repositorio
+### 1. Clonar el repositorio de Semana 5
 
 ```bash
-git clone https://github.com/Vigilalo/semana-4-taller-de-plataformas-web.git semana-5-taller-plataformas-web
+git clone https://github.com/Vigilalo/semana-4-taller-de-plataformas-web.git semana5-taller-plataformas-websemana5-taller-plataformas-web
 cd semana5-taller-plataformas-web
 ```
 
@@ -184,7 +200,7 @@ El flujo general de configuración consiste en:
 4. Crear el servidor HTTPS con las credenciales cargadas.
 5. Escuchar en el puerto definido en `server.js`.
 
-Ejemplo de configuración:
+Ejemplo general de configuración:
 
 ```js
 const express = require("express");
@@ -199,11 +215,11 @@ const httpsOptions = {
 };
 
 https.createServer(httpsOptions, app).listen(443, () => {
-  console.log("Servidor HTTPS activo en [https://localhost](https://localhost)");
+  console.log("Servidor HTTPS activo en (https://localhost)");
 });
 ```
 
-> ℹ️ El puerto del ejemplo puede variar según la configuración real del archivo `server.js`. Verifica el puerto configurado antes de ejecutar el proyecto.
+> ℹ️ El puerto del ejemplo puede variar según la configuración real de `server.js`. Verifica el puerto configurado antes de ejecutar el proyecto.
 
 ---
 
@@ -222,28 +238,28 @@ Si el proyecto incluye un script `start` en `package.json`, también puede ejecu
 npm start
 ```
 
-Luego, ingresa desde el navegador a la dirección correspondiente al puerto definido en `server.js`.
+Luego, abre el navegador y accede a la dirección definida en `server.js`.
 
 Ejemplos:
 
 ```text
-[https://localhost](https://localhost)
+(https://localhost)
 ```
 
 ```text
-[https://localhost:8080](https://localhost:8080)
+(https://localhost:8080)
 ```
 
 ### Advertencia esperada del navegador
 
-Debido a que el certificado es autofirmado, el navegador puede mostrar mensajes como:
+Debido a que se utiliza un certificado autofirmado, el navegador puede mostrar mensajes como:
 
 > “Tu conexión no es privada”  
 > “El certificado de este sitio no es de confianza”
 
-La advertencia no significa necesariamente que la conexión no esté cifrada. Indica que el navegador no puede verificar la identidad del emisor del certificado mediante una entidad de confianza.
+La advertencia no significa necesariamente que la comunicación no esté cifrada. Significa que el navegador no puede comprobar que el certificado haya sido emitido por una entidad reconocida.
 
-En un entorno productivo, esta situación se resuelve utilizando certificados válidos emitidos por una Autoridad Certificadora, por ejemplo, **Let's Encrypt**, mediante herramientas como **Certbot**, o certificados entregados por proveedores comerciales.
+En producción, este problema se soluciona utilizando certificados válidos emitidos por una Autoridad Certificadora, por ejemplo, **Let's Encrypt**, usando herramientas como **Certbot**, o certificados entregados por proveedores comerciales.
 
 ---
 
@@ -252,8 +268,8 @@ En un entorno productivo, esta situación se resuelve utilizando certificados v�
 El proyecto se desarrolla de forma grupal utilizando **Git** y **GitHub** para registrar el avance técnico y documental.
 
 - Cada integrante participa en tareas asociadas a su rol.
-- Los cambios se registran mediante commits descriptivos.
-- Se mantiene un historial de versiones para evidenciar el trabajo realizado.
+- Los cambios se registran mediante commits claros y descriptivos.
+- El historial de Git permite evidenciar el trabajo realizado.
 - La actividad considera un mínimo de **4 commits por integrante**.
 
 ### Roles del equipo
@@ -266,11 +282,11 @@ El proyecto se desarrolla de forma grupal utilizando **Git** y **GitHub** para r
 
 ### Aportes destacados de Matías Aquea
 
-- Actualización de la documentación de la actividad Semana 5.
+- Actualización de la documentación correspondiente a Semana 5.
 - Configuración del servidor HTTPS con Node.js y Express.
-- Generación y gestión local del certificado SSL/TLS autofirmado.
+- Gestión local del certificado SSL/TLS autofirmado.
 - Exclusión de la carpeta `cert/` mediante `.gitignore`.
-- Pruebas de acceso y funcionamiento local del servidor HTTPS.
+- Pruebas de acceso y funcionamiento local mediante HTTPS.
 
 ---
 
@@ -278,14 +294,14 @@ El proyecto se desarrolla de forma grupal utilizando **Git** y **GitHub** para r
 
 El proyecto incluye un informe técnico grupal en formato Word que documenta:
 
-- Los comandos utilizados para generar el certificado SSL/TLS con OpenSSL.
-- La configuración HTTPS implementada en el servidor Express.
-- Fragmentos de código fuente comentados.
+- Los comandos de OpenSSL usados para generar el certificado SSL/TLS.
+- La configuración HTTPS implementada con Express.
+- Fragmentos relevantes del código fuente comentados.
 - Evidencias de ejecución y pruebas realizadas desde el navegador.
 - La advertencia generada por el certificado autofirmado.
 - La diferencia entre certificados autofirmados y certificados válidos para producción.
-- Roles de los integrantes y evidencias de trabajo colaborativo.
-- Capturas de commits, ramas y otros registros del repositorio.
+- Los roles del equipo y las evidencias de trabajo colaborativo.
+- Capturas del historial de commits y registros del repositorio.
 
 ---
 
@@ -293,7 +309,7 @@ El proyecto incluye un informe técnico grupal en formato Word que documenta:
 
 Este proyecto utiliza certificados **autofirmados** exclusivamente con fines académicos y de desarrollo local.
 
-No se recomienda usar certificados autofirmados en un sitio web público o en producción. En esos casos, se debe utilizar un certificado válido emitido por una Autoridad Certificadora confiable.
+No se recomienda usar certificados autofirmados en un sitio web público o en producción. Para ello, se deben utilizar certificados válidos emitidos por una Autoridad Certificadora confiable.
 
 También se recomienda:
 
@@ -301,7 +317,7 @@ También se recomienda:
 - Utilizar `.gitignore` para excluir certificados y archivos sensibles.
 - Gestionar secretos mediante variables de entorno.
 - Renovar los certificados antes de su vencimiento.
-- Redirigir las solicitudes HTTP hacia HTTPS en ambientes productivos.
+- Redirigir solicitudes HTTP hacia HTTPS en ambientes productivos.
 
 ---
 
