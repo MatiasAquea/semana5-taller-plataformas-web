@@ -99,7 +99,7 @@ openssl version
 ### 1. Clonar el repositorio
 
 ```bash
-git clone [https://github.com/MatiasAquea/semana5-taller-plataformas-web.git](https://github.com/MatiasAquea/semana5-taller-plataformas-web.git) semana5-taller-plataformas-web
+git clone https://github.com/Vigilalo/semana-4-taller-de-plataformas-web.git semana-5-taller-plataformas-web
 cd semana5-taller-plataformas-web
 ```
 
