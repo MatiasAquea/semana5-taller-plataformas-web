@@ -8,8 +8,11 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const PORT = 3010; // Usando el puerto 3010 de tu intento anterior
+const PORT = 3010; // Puerto HTTP
+const HTTPS_PORT = 443; // Puerto HTTPS
 const SECRET_KEY = process.env.JWT_SECRET; // Clave para firmar el token definida en variables de entorno
+
+console.log('Valor de JWT_SECRET:', process.env.JWT_SECRET);
 
 if (!SECRET_KEY) {
     console.error('Error: falta definir JWT_SECRET en las variables de entorno.');
@@ -116,8 +119,6 @@ const httpsOptions = {
   cert: fs.readFileSync('./cert/certificate.pem'),
 
 };
-const PORT = 3010;
-const HTTPS_PORT = 443;
 
 app.listen(PORT, () => {
   console.log(`Servidor HTTP escuchando en puerto ${PORT}`);
