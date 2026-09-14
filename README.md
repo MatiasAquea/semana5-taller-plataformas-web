@@ -1,159 +1,186 @@
-# 🚀 Semana 4 - Taller de Plataformas Web
+# Actividad formativa Semana 5 – Taller de plataformas Web
 
-Proyecto grupal correspondiente a la **Actividad Práctica Formativa de la Semana 4** de la asignatura **Taller de Plataformas Web**.
+Servidor HTTPS en Node.js y Express con certificado SSL/TLS autofirmado para el proyecto Vigilo.cl.
 
-El objetivo es implementar un servidor backend con **Node.js y Express.js**, incorporando autenticación mediante **JWT**,
-almacenamiento del token en **cookies httpOnly**, protección de rutas mediante **middleware** y cierre de sesión.
+---
 
-#################################################################################
+## Descripción del proyecto
 
-## 🎯 Objetivos del proyecto
+Este repositorio corresponde a la actividad formativa de la **Semana 5** de la asignatura **Taller de plataformas Web**.  
+El proyecto extiende el backend desarrollado anteriormente para la agencia digital ficticia **Vigilo.cl**, incorporando ahora la configuración de un **servidor HTTPS** en Node.js con Express, utilizando un **certificado SSL/TLS autofirmado** generado mediante OpenSSL.
 
-- ✅ Crear un servidor con Express.js.
-- ✅ Implementar una ruta de login.
-- ✅ Validar credenciales contra usuarios ficticios.
-- ✅ Generar un token JWT.
-- ✅ Almacenar el JWT en una cookie segura.
-- ✅ Proteger rutas privadas mediante middleware.
-- ✅ Validar tokens inválidos o expirados.
-- ✅ Implementar cierre de sesión.
-- ✅ Utilizar variables de entorno para gestionar secretos.
-- ✅ Documentar el trabajo colaborativo mediante Git y GitHub.
+El objetivo principal es aplicar herramientas digitales de seguridad para comprender cómo se configuran certificados, protocolos y cifrado en un entorno de backend, preparando la base para escenarios reales de producción.
 
-#################################################################################
+---
 
-## 🛠️ Tecnologías utilizadas
+## Objetivos de la actividad
 
-- 🟢 Node.js
-- ⚡ Express.js
-- 🔐 JSON Web Token
-- 🍪 Cookies
-- 🌱 dotenv
-- 🟨 JavaScript
-- 🌿 Git
-- 🐙 GitHub
+### Objetivo general
 
-#################################################################################
+Implementar un servidor HTTPS en Node.js y Express utilizando un certificado SSL/TLS autofirmado, documentando el proceso técnico y colaborativo en GitHub.
 
-## 📁 Estructura general
+### Objetivos específicos
 
-```text
-semana-4-taller-de-plataformas-web/
-├── server.js
-├── package.json
-├── package-lock.json
-├── .gitignore
-├── .env.example
-└── README.md
-```
-## ⚙️ Instalación y ejecución
+- Crear una aplicación básica en **Node.js** con **Express**.
+- Generar un **certificado SSL autofirmado** con **OpenSSL**, incluyendo clave privada y certificado.
+- Configurar el servidor Express para funcionar bajo **HTTPS**, utilizando el módulo nativo `https` de Node.js y el módulo `fs` para leer los certificados.
+- Probar el servidor en `https://localhost` (puerto 443 o 8080, según la configuración local) y describir el comportamiento del navegador frente al certificado autofirmado.
+- Comentar el código fuente para facilitar la comprensión del servidor HTTPS y sus rutas.
+- Registrar el trabajo colaborativo del equipo mediante ramas, commits y Pull Requests en GitHub, con un mínimo de 4 commits por integrante.
+- Reflexionar sobre por qué el navegador marca el sitio como inseguro a pesar de usar HTTPS y cómo se soluciona este problema en un entorno productivo real (por ejemplo, usando Let’s Encrypt o proveedores comerciales).
 
-### Requisitos
+---
 
-- Node.js instalado.
-- npm disponible en la terminal.
-- Archivo `.env` configurado a partir de `.env.example`.
+## Tecnologías y herramientas utilizadas
 
-### Instalación
+- **Node.js** – Ejecución del servidor backend.
+- **Express.js** – Creación de la aplicación y definición de rutas HTTP/HTTPS.
+- **https (módulo nativo de Node.js)** – Creación del servidor HTTPS.
+- **fs (File System)** – Lectura de la clave privada y el certificado autofirmado.
+- **OpenSSL** – Generación de la clave privada y del certificado SSL/TLS autofirmado.
+- **Git y GitHub** – Control de versiones, colaboración mediante ramas y Pull Requests.
+- **Visual Studio Code** – Edición y desarrollo del código.
+- **Navegador web** (Chrome, Edge, Firefox) – Pruebas del comportamiento del navegador frente al certificado autofirmado.
+- **Postman** (opcional) – Pruebas adicionales de las rutas del servidor.
+
+---
+
+## Requisitos previos
+
+Antes de ejecutar el proyecto, se recomienda contar con:
+
+- Node.js (versión LTS recomendada)
+- npm (incluido con Node.js)
+- Git y Git Bash
+- OpenSSL instalado en el sistema
+- Editor de código (Visual Studio Code u otro)
+
+---
+
+## Instalación del proyecto
+
+1. Clonar el repositorio de la actividad Semana 5:
+
+   ```bash
+   git clone <URL_DE_ESTE_REPOSITORIO> semana5-taller-plataformas-web
+   cd semana5-taller-plataformas-web
+   ```
+
+2. Instalar las dependencias del proyecto:
+
+   ```bash
+   npm install
+   ```
+
+---
+
+## Estructura general del proyecto
+
+La estructura base del proyecto incluye:
+
+- `server.js` – Archivo principal del servidor Express.
+- `package.json` – Definición de dependencias y scripts de ejecución.
+- `package-lock.json` – Registro de versiones exactas de las dependencias.
+- `.gitignore` – Archivos y carpetas excluidos del repositorio (incluye certificados).
+- `cert/` – Carpeta local para almacenar la clave privada y el certificado autofirmado (no se sube a GitHub).
+- `README.md` – Documentación general del proyecto.
+- Informe Word de la actividad Semana 5 (almacenado en el repositorio según la pauta).
+
+---
+
+## Generación del certificado SSL/TLS autofirmado
+
+Los certificados se generan mediante **OpenSSL** y se guardan en la carpeta `cert/`.  
+Un flujo típico de comandos es el siguiente (ejemplo):
+
+1. Generar la clave privada:
+
+   ```bash
+   openssl genrsa -out cert/privatekey.pem 2048
+   ```
+
+2. Generar la CSR (Certificate Signing Request):
+
+   ```bash
+   openssl req -new -key cert/privatekey.pem -out cert/request.csr
+   ```
+
+3. Generar el certificado autofirmado (válido por 365 días):
+
+   ```bash
+   openssl x509 -req -days 365 -in cert/request.csr -signkey cert/privatekey.pem -out cert/certificate.pem
+   ```
+
+La carpeta `cert/` se agrega al archivo `.gitignore` para evitar subir la clave privada y el certificado al repositorio, siguiendo buenas prácticas de seguridad.
+
+---
+
+## Configuración del servidor HTTPS en Express
+
+El servidor HTTPS se configura utilizando los módulos `https` y `fs` de Node.js.  
+De forma general, el flujo es:
+
+1. Importar las dependencias necesarias (`express`, `https`, `fs`).
+2. Crear la aplicación Express (`const app = express()`).
+3. Leer la clave privada y el certificado desde la carpeta `cert/` utilizando `fs.readFileSync`.
+4. Crear el servidor HTTPS con `https.createServer({ key, cert }, app)`.
+5. Escuchar en el puerto 443 o 8080 y registrar un mensaje en consola indicando que el servidor HTTPS se encuentra activo.
+
+Las rutas existentes del backend (por ejemplo, login, ruta privada y logout) continúan funcionando, ahora protegidas por HTTPS.
+
+---
+
+## Ejecución del servidor
+
+Para iniciar el servidor:
 
 ```bash
-npm install
-```
-
-### Configuración
-
-Crear un archivo `.env` con el siguiente contenido:
-
-```env
-JWT_SECRET=clave_local_de_prueba
-NODE_ENV=development
-PORT=3010
-```
-
-> [!IMPORTANT]
-> El archivo `.env` no debe subirse al repositorio, ya que puede contener información sensible.
-
-### Iniciar servidor
-
-```bash
+node server.js
+# o, si existe script en package.json:
 npm start
 ```
 
-Servidor disponible en:
+Luego, acceder desde el navegador a:
 
 ```text
-http://localhost:3010
+[https://localhost:443](https://localhost:443)
 ```
 
-## 🔐 Endpoints de autenticación
+o al puerto configurado para el servidor HTTPS.
 
-### `POST /login`
+Durante las pruebas, el navegador mostrará una advertencia indicando que el certificado no es de confianza (sitio no seguro) debido a que se trata de un certificado autofirmado. Esta conducta se documenta en el informe, junto con las capturas de pantalla y la reflexión sobre el uso de certificados emitidos por Autoridades Certificadoras reales.
 
-Autentica a un usuario con credenciales válidas.
+---
 
-**Ejemplo de solicitud:**
+## Trabajo colaborativo y control de versiones
 
-```json
-{
-  "username": "matias",
-  "password": "aiep2026"
-}
-```
+El proyecto se desarrolla de forma **grupal**, con tres integrantes, utilizando Git y GitHub:
 
-**Resultado esperado:**
-- Generación de JWT.
-- Almacenamiento del token en la cookie `token`.
+- Cada integrante trabaja en una rama independiente asociada a sus tareas principales.
+- Las funcionalidades se integran mediante **Pull Requests**, siguiendo la pauta de la asignatura.
+- Se registra un mínimo de **4 commits por integrante**, con mensajes claros y descriptivos.
 
-### `GET /privada`
+### Roles del equipo (Resumen)
 
-Permite acceder a una ruta protegida.  
-Requiere una cookie `token` válida.
+| Integrante       | Rol principal                                              |
+|------------------|------------------------------------------------------------|
+| Matías Aquea     | Documentación, pruebas y configuración de servidor HTTPS  |
+| Yilber Yáñez     | Validación de rutas y pruebas de funcionamiento            |
+| Víctor Aizpurua  | Backend y seguridad (configuración de Express y middleware)|
 
-### `POST /logout`
+En el informe Word se detalla la participación de cada integrante, la matriz de responsabilidades y las evidencias de commits y Pull Requests.
 
-Cierra la sesión y elimina la cookie `token`.
+---
 
-## 📬 Respuestas esperadas
+## Informe técnico de la actividad
 
-- `200 OK` para login exitoso.
-- `401 Unauthorized` para credenciales incorrectas.
-- Error de validación para usuario inexistente.
-- `401 Unauthorized` si no existe token.
-- `200 OK` si el token es válido.
+Además del código fuente, el proyecto incluye un **informe técnico grupal** en formato Word, que documenta:
 
-## 🧪 Casos de prueba
+- Comandos utilizados para la generación del certificado SSL/TLS con OpenSSL.
+- Explicación de la configuración HTTPS en Express.
+- Evidencias de pruebas realizadas en el navegador (capturas de advertencias y funcionamiento).
+- Fragmentos de código fuente comentados.
+- Roles del equipo y evidencias de trabajo colaborativo en GitHub.
+- Un párrafo reflexivo que responde por qué el navegador marca el sitio como inseguro a pesar de usar HTTPS y cómo se soluciona en un entorno productivo real (uso de Let’s Encrypt, Certbot u otras Autoridades Certificadoras comerciales).
 
-| Nº | Caso | Solicitud | Resultado esperado |
-|---:|---|---|---|
-| 1 | Login válido | `POST /login` | `200 OK` y cookie `token` |
-| 2 | Usuario inexistente | `POST /login` | Respuesta de error |
-| 3 | Contraseña incorrecta | `POST /login` | `401 Unauthorized` |
-| 4 | Acceso autorizado | `GET /privada` con cookie | `200 OK` |
-| 5 | Acceso sin token | `GET /privada` sin cookie | `401 Unauthorized` |
-| 6 | Cierre de sesión | `POST /logout` | Cookie eliminada |
-| 7 | Acceso posterior al logout | `GET /privada` | `401 Unauthorized` |
-
-> [!NOTE]
-> Las pruebas deben ejecutarse con **Postman** o una herramienta equivalente, y cada resultado debe respaldarse con una captura de pantalla.
-
-## 👥 Trabajo colaborativo
-
-El equipo trabajó mediante ramas independientes y commits específicos por integrante.
-
-| Integrante | Rama | Responsabilidad |
-|---|---|---|
-| Yilber Yañez | Rama de autenticación | Validación de usuarios y credenciales |
-| Víctor Aizpurua | `feature/victor-auth-security` | JWT, cookies, middleware y logout |
-| Matías Aquea | `feature/matias-aquea` | Documentación técnica, pruebas y organización |
-
-Cada integrante desarrolló sus cambios en una rama separada. Luego, los aportes se integraron mediante **Pull Requests** hacia la rama principal.
-
-La revisión del historial en GitHub permite identificar el autor, el mensaje y los archivos modificados en cada commit.
-
-## ✅ Aprendizajes logrados
-
-- Implementación de autenticación basada en JWT.
-- Uso de cookies seguras con `httpOnly`.
-- Protección de rutas privadas con middleware.
-- Gestión de variables de entorno con `dotenv`.
-- Trabajo colaborativo usando ramas, commits y Pull Requests.
+Este informe se sube junto con el código al repositorio GitHub grupal y a la plataforma virtual de la asignatura, según las indicaciones del docente.
