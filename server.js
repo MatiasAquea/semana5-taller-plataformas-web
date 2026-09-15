@@ -96,17 +96,20 @@ app.post('/login', (req, res) => {
 });
 
 // Middleware para proteger rutas
+// Middleware para proteger rutas
 const verificarToken = (req, res, next) => {
     const token = req.cookies.token;
 
-    if (!token) {
+    if (!token || typeof token !== 'string') {
         return res.status(401).json({ message: 'Acceso no autorizado.' });
     }
 
     try {
         const verificado = jwt.verify(token, JWT_SECRET);
         req.usuario = verificado;
+
         next();
+
     } catch (error) {
         return res.status(401).json({ message: 'Acceso no autorizado.' });
     }
