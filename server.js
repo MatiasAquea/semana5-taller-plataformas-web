@@ -54,7 +54,7 @@ if (
         // Generar token JWT
         const token = jwt.sign({ username: usuarioValido.username }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
 
-        if (!usuarioExiste) {
+        if (!usuarioValido) {
     return res.status(404).json({
         message: 'El usuario no existe.'
     });
@@ -76,6 +76,7 @@ if (
 });
 
 // Middleware para proteger rutas
+// Middleware para proteger rutas
 const verificarToken = (req, res, next) => {
     const token = req.cookies.token;
 
@@ -86,11 +87,18 @@ const verificarToken = (req, res, next) => {
     }
 
     try {
-        const verificado = jwt.verify(token, process.env.JWT_SECRET);
+        const verificado = jwt.verify(token, SECRET_KEY);
+
         req.usuario = verificado;
+
         next();
+
     } catch (error) {
-        return res.status(401).json({ message: 'Token inválido o expirado.' });
+        console.error("Error al validar el token:", error.message);
+
+        return res.status(401).json({
+            message: "Token inválido o expirado. Debe iniciar sesión nuevamente."
+        });
     }
 };
 
