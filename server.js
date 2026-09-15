@@ -79,8 +79,10 @@ if (
 const verificarToken = (req, res, next) => {
     const token = req.cookies.token;
 
-    if (!token) {
-        return res.status(401).json({ message: 'Acceso denegado. No hay token.' });
+    if (!token || typeof token !== 'string') {
+        return res.status(401).json({
+            message: 'Acceso denegado. Debe iniciar sesión para acceder a esta ruta.'
+        });
     }
 
     try {
@@ -115,8 +117,8 @@ app.post('/logout', (req, res) => {
     res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
 });
 const httpsOptions = {
-  key: fs.readFileSync('./cert/privatekey.pem'),
-  cert: fs.readFileSync('./cert/certificate.pem'),
+//  key: fs.readFileSync('./cert/privatekey.pem'),
+ // cert: fs.readFileSync('./cert/certificate.pem'),
 
 };
 
