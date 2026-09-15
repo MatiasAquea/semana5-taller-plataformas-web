@@ -38,6 +38,18 @@ app.disable('x-powered-by');
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
+// Cabeceras globales para reducir la exposición HTTP del backend.
+app.use((req, res, next) => {
+    res.set({
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Referrer-Policy': 'no-referrer',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'Cross-Origin-Resource-Policy': 'same-origin'
+    });
+    next();
+});
+
 // 1. Arreglo con dos usuarios ficticios
 const usuarios = [
     { username: 'yilber', password: 'aiep2026' },
