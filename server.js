@@ -1,5 +1,6 @@
 const https = require('https');
 const fs = require('fs');
+const path = require('path');
 
 require('dotenv').config();
 
@@ -24,6 +25,9 @@ const getPort = (value, defaultPort, variableName) => {
 
 const PORT = getPort(process.env.PORT, 3010, 'PORT');
 const HTTPS_PORT = getPort(process.env.HTTPS_PORT, 443, 'HTTPS_PORT');
+const CERT_DIRECTORY = path.join(__dirname, 'cert');
+const PRIVATE_KEY_PATH = path.join(CERT_DIRECTORY, 'privatekey.pem');
+const CERTIFICATE_PATH = path.join(CERT_DIRECTORY, 'certificate.pem');
 
 if (!JWT_SECRET) {
     console.error('Error: falta definir JWT_SECRET en las variables de entorno.');
@@ -126,16 +130,47 @@ app.post('/logout', (req, res) => {
     res.clearCookie('token', COOKIE_OPTIONS);
     res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
 });
-const httpsOptions = {
-  key: fs.readFileSync('./cert/privatekey.pem'),
-  cert: fs.readFileSync('./cert/certificate.pem'),
 
+const loadHttpsOptions = () => {
+    const certificateFiles = [
+        { path: PRIVATE_KEY_PATH, name: 'privatekey.pem' },
+        { path: CERTIFICATE_PATH, name: 'certificate.pem' }
+    ];
+
+    for (const certificateFile of certificateFiles) {
+        if (!fs.existsSync(certificateFile.path)) {
+            console.error(`Error: falta el archivo de certificado requerido: ${certificateFile.name}.`);
+            process.exit(1);
+        }
+    }
+
+    try {
+        return {
+            key: fs.readFileSync(PRIVATE_KEY_PATH),
+            cert: fs.readFileSync(CERTIFICATE_PATH)
+        };
+    } catch (error) {
+        console.error('Error: no se pudieron leer los certificados HTTPS.');
+        process.exit(1);
+    }
 };
 
-app.listen(PORT, () => {
+const httpsOptions = loadHttpsOptions();
+
+const httpServer = app.listen(PORT, () => {
   console.log(`Servidor HTTP escuchando en puerto ${PORT}`);
 });
 
-https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+httpServer.on('error', (error) => {
+  console.error(`Error al iniciar servidor HTTP en puerto ${PORT}: ${error.code || 'desconocido'}.`);
+  process.exit(1);
+});
+
+const httpsServer = https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
   console.log(`Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
+});
+
+httpsServer.on('error', (error) => {
+  console.error(`Error al iniciar servidor HTTPS en puerto ${HTTPS_PORT}: ${error.code || 'desconocido'}.`);
+  process.exit(1);
 });
