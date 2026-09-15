@@ -117,12 +117,23 @@ app.get('/privada', verificarToken, (req, res) => {
 
 // 4. Ruta de Cierre de sesión (Logout)
 app.post('/logout', (req, res) => {
+    const token = req.cookies.token;
+
     res.clearCookie('token', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'
     });
-    res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
+
+    if (!token) {
+        return res.status(200).json({
+            message: 'No había una sesión activa. Cookie eliminada.'
+        });
+    }
+
+    res.status(200).json({
+        message: 'Sesión cerrada exitosamente. Cookie eliminada.'
+    });
 });
 const httpsOptions = {
 //  key: fs.readFileSync('./cert/privatekey.pem'),
