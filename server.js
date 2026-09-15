@@ -33,6 +33,12 @@ if (!JWT_SECRET) {
 
 // Configuración de seguridad utilizada por el servidor
 const TOKEN_EXPIRATION = '1h';
+const TOKEN_MAX_AGE = 60 * 60 * 1000;
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: NODE_ENV === 'production',
+    sameSite: 'strict'
+};
 
 app.disable('x-powered-by');
 app.use(express.json({ limit: '10kb' }));
@@ -61,42 +67,28 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body || {};
 
     // Validar que los datos sean cadenas de texto
-if (
-    typeof username !== 'string' ||
-    typeof password !== 'string' ||
-    username.trim() === '' ||
-    password.trim() === ''
-) {
-    return res.status(400).json({
-        message: 'Usuario y contraseña son obligatorios y deben ser válidos.'
-    });
-}
-
-    const usuarioValido = usuarios.find(u => u.username === username && u.password === password);
-
-    if (usuarioValido) {
-        // Generar token JWT
-        const token = jwt.sign({ username: usuarioValido.username }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
-
-        if (!usuarioExiste) {
-    return res.status(404).json({
-        message: 'El usuario no existe.'
-    });
-}
-
-        // Enviar token como cookie httpOnly
-        res.cookie('token', token, { 
-            httpOnly: true, 
-            secure: NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 3600000 
+    if (
+        typeof username !== 'string' ||
+        typeof password !== 'string' ||
+        username.trim() === '' ||
+        password.trim() === ''
+    ) {
+        return res.status(400).json({
+            message: 'Usuario y contraseña son obligatorios y deben ser válidos.'
         });
-
-        res.json({ message: 'Login exitoso', token });
-    } else {
-        // Credenciales incorrectas: Error 401
-        res.status(401).json({ message: "Credenciales incorrectas. No autorizado." });
     }
+
+    const usuario = usuarios.find(u => u.username === username);
+
+    if (!usuario || usuario.password !== password) {
+        return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
+
+    // Generar token JWT y entregarlo solamente mediante cookie httpOnly.
+    const token = jwt.sign({ username: usuario.username }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
+    res.cookie('token', token, { ...COOKIE_OPTIONS, maxAge: TOKEN_MAX_AGE });
+
+    return res.json({ message: 'Login exitoso.' });
 });
 
 // Middleware para proteger rutas
@@ -104,7 +96,7 @@ const verificarToken = (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({ message: 'Acceso denegado. No hay token.' });
+        return res.status(401).json({ message: 'Acceso no autorizado.' });
     }
 
     try {
@@ -112,7 +104,7 @@ const verificarToken = (req, res, next) => {
         req.usuario = verificado;
         next();
     } catch (error) {
-        return res.status(401).json({ message: 'Token inválido o expirado.' });
+        return res.status(401).json({ message: 'Acceso no autorizado.' });
     }
 };
 
@@ -131,11 +123,7 @@ app.get('/privada', verificarToken, (req, res) => {
 
 // 4. Ruta de Cierre de sesión (Logout)
 app.post('/logout', (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: NODE_ENV === 'production',
-        sameSite: 'strict'
-    });
+    res.clearCookie('token', COOKIE_OPTIONS);
     res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
 });
 const httpsOptions = {
