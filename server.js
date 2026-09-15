@@ -8,13 +8,24 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const PORT = 3010; // Puerto HTTP
-const HTTPS_PORT = 443; // Puerto HTTPS
-const SECRET_KEY = process.env.JWT_SECRET; // Clave para firmar el token definida en variables de entorno
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-console.log('Valor de JWT_SECRET:', process.env.JWT_SECRET);
+const getPort = (value, defaultPort, variableName) => {
+    const port = value === undefined || value === '' ? defaultPort : Number(value);
 
-if (!SECRET_KEY) {
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+        console.error(`Error: ${variableName} debe ser un puerto entero entre 1 y 65535.`);
+        process.exit(1);
+    }
+
+    return port;
+};
+
+const PORT = getPort(process.env.PORT, 3010, 'PORT');
+const HTTPS_PORT = getPort(process.env.HTTPS_PORT, 443, 'HTTPS_PORT');
+
+if (!JWT_SECRET) {
     console.error('Error: falta definir JWT_SECRET en las variables de entorno.');
     process.exit(1);
 }
@@ -23,7 +34,8 @@ if (!SECRET_KEY) {
 // Configuración de seguridad utilizada por el servidor
 const TOKEN_EXPIRATION = '1h';
 
-app.use(express.json());
+app.disable('x-powered-by');
+app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
 // 1. Arreglo con dos usuarios ficticios
@@ -52,7 +64,7 @@ if (
 
     if (usuarioValido) {
         // Generar token JWT
-        const token = jwt.sign({ username: usuarioValido.username }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
+        const token = jwt.sign({ username: usuarioValido.username }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
 
         if (!usuarioExiste) {
     return res.status(404).json({
@@ -63,7 +75,7 @@ if (
         // Enviar token como cookie httpOnly
         res.cookie('token', token, { 
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
+            secure: NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 3600000 
         });
@@ -84,7 +96,7 @@ const verificarToken = (req, res, next) => {
     }
 
     try {
-        const verificado = jwt.verify(token, process.env.JWT_SECRET);
+        const verificado = jwt.verify(token, JWT_SECRET);
         req.usuario = verificado;
         next();
     } catch (error) {
@@ -109,7 +121,7 @@ app.get('/privada', verificarToken, (req, res) => {
 app.post('/logout', (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: NODE_ENV === 'production',
         sameSite: 'strict'
     });
     res.json({ message: 'Sesión cerrada exitosamente. Cookie eliminada.' });
